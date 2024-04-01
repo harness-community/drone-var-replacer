@@ -5,6 +5,7 @@
 package plugin
 
 import (
+	"context"
 	"io/ioutil"
 	"os"
 	"regexp"
@@ -13,7 +14,16 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func main() {
+type Args struct {
+	Pipeline
+
+	// Level defines the plugin log level.
+	Level string `envconfig:"PLUGIN_LOG_LEVEL"`
+
+	TemplateFilePath string `envconfig:"PLUGIN_TEMPLATE_FILE_PATH"`
+}
+
+func Exec(ctx context.Context, args Args) error {
 	log := logrus.New()
 
 	templateFilePath := os.Getenv("PLUGIN_TEMPLATE_FILE_PATH")
@@ -33,6 +43,8 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error writing the updated template file: %v", err)
 	}
+
+	return nil
 }
 
 func replacePlaceholders(content string, log *logrus.Logger) string {
